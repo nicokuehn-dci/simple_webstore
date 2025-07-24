@@ -1,0 +1,20 @@
+# Simple WebStore Dependencies
+# Core Python packages for the webstore application
+
+# No external dependencies required!
+# This application uses only Python standard library:
+# - json (built-in)
+# - csv (built-in) 
+# - pathlib (built-in)
+# - abc (built-in)
+# - typing (built-in)
+# - uuid (built-in)
+# - datetime (built-in)
+
+# Optional development dependencies:
+# mypy>=1.0.0        # Type checking
+# pylint>=2.0.0      # Code linting
+# black>=22.0.0      # Code formatting
+
+# The webstore is designed to work with Python 3.7+ standard library only
+# This makes it lightweight and easy to deploy without external dependencies
