@@ -6,7 +6,7 @@ def admin_user_menu(self):
     """Admin user management menu"""
     menu = SimpleMenu("👥 User Management", [
         "📋 List All Users",
-        "🔄 Change User Role", 
+        "🔄 Change User Role",
         "🗑️ Delete User"
     ])
     

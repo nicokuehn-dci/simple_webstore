@@ -21,7 +21,7 @@ class SimpleMenu:
         
         for i, option in enumerate(self.options):
             print(f"  {i + 1}. {option}")
-        print(f"  0. Exit/Back")
+        print("  0. Exit/Back")
         print()
         
         try:
@@ -58,8 +58,8 @@ class SimpleMenu:
                 print("\n👋 Goodbye!")
                 sys.exit(0)
     
-    def get_number_input(self, prompt: str, min_val: float = None,
-                        max_val: float = None) -> float:
+    def get_number_input(self, prompt: str, min_val: float | None = None,
+                         max_val: float | None = None) -> float:
         """Get numeric input with validation"""
         while True:
             try:
@@ -81,8 +81,8 @@ class SimpleMenu:
                 print("\n👋 Goodbye!")
                 sys.exit(0)
     
-    def get_integer_input(self, prompt: str, min_val: int = None,
-                         max_val: int = None) -> int:
+    def get_integer_input(self, prompt: str, min_val: int | None = None,
+                          max_val: int | None = None) -> int:
         """Get integer input with validation"""
         return int(self.get_number_input(prompt, min_val, max_val))
     

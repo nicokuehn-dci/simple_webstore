@@ -57,8 +57,12 @@ class CustomerInterface:
         if result['success']:
             for product in result['products']:
                 status = "✅" if product['stock'] > 0 else "❌ Out of Stock"
-                print(f"{product['id']}. {product['name']} - €{product['price']:.2f}")
-                print(f"   Category: {product['category']} | Stock: {product['stock']} {status}")
+                product_info = f"{product['id']}. {product['name']}"
+                price_info = f"€{product['price']:.2f}"
+                print(f"{product_info} - {price_info}")
+                category = product['category']
+                stock = product['stock']
+                print(f"   Category: {category} | Stock: {stock} {status}")
                 print()
         else:
             print(f"❌ {result['error']}")
@@ -75,7 +79,9 @@ class CustomerInterface:
             for item in result['items']:
                 subtotal = item['price'] * item['quantity']
                 total += subtotal
-                print(f"• {item['quantity']}x {item['name']} - €{subtotal:.2f}")
+                quantity_name = f"{item['quantity']}x {item['name']}"
+                price_text = f"€{subtotal:.2f}"
+                print(f"• {quantity_name} - {price_text}")
             
             print(f"\nTotal: €{total:.2f}")
         else:

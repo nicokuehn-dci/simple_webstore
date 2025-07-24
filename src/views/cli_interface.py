@@ -26,8 +26,12 @@ class WebStoreInterface:
             except KeyboardInterrupt:
                 print("\nGoodbye!")
                 break
-            except Exception as e:
+            except (ValueError, TypeError, AttributeError,
+                    ImportError, IOError) as e:
                 print(f"Error: {e}")
+                continue
+            except SystemExit:
+                break
     
     def print_welcome(self):
         """Display welcome message"""

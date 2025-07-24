@@ -89,7 +89,8 @@ def admin_update_product(self):
             price_str = input(f"Price [{product['price']}]: €").strip()
             stock_str = input(f"Stock [{product['stock']}]: ").strip()
             category = input(f"Category [{product['category']}]: ").strip()
-            description = input(f"Description [{product.get('description', '')}]: ").strip()
+            current_desc = product.get('description', '')
+            description = input(f"Description [{current_desc}]: ").strip()
             
             # Use current values if empty
             name = name or product['name']

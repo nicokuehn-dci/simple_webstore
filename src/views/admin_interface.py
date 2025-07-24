@@ -6,16 +6,16 @@ Admin interface extensions for CLI
 def _admin_product_menu(self):
     """Admin product management menu"""
     from src.views.menu import SimpleMenu
-    
+
     menu = SimpleMenu("Product Management", [
         "➕ Add New Product",
-        "📋 List All Products", 
+        "📋 List All Products",
         "📝 Update Product",
         "🗑️  Delete Product",
         "📊 Low Stock Report",
         "🏷️  Apply Category Discount"
     ])
-    
+
     choice = menu.display()
     if choice is None:
         return
@@ -38,13 +38,13 @@ def _admin_add_product(self):
     print("\n" + "=" * 50)
     print("➕ ADD NEW PRODUCT")
     print("=" * 50)
-    
+
     name = self.menu.get_input("Product Name")
     price = self.menu.get_number_input("Price (€)", min_val=0)
     category = self.menu.get_input("Category")
     stock = self.menu.get_integer_input("Initial Stock", min_val=0)
     description = self.menu.get_input("Description (optional)", required=False)
-    
+
     result = self.product_controller.create_product(
         name=name,
         price=price,
@@ -52,7 +52,7 @@ def _admin_add_product(self):
         stock=stock,
         description=description
     )
-    
+
     if result['success']:
         self.menu.print_success(result['message'])
         product = result['product']
@@ -61,7 +61,7 @@ def _admin_add_product(self):
         print(f"   Price: {product['price_display']}")
     else:
         self.menu.print_error(result['error'])
-    
+
     self.menu.pause()
 
 
@@ -70,27 +70,32 @@ def _admin_update_product(self):
     print("\n" + "=" * 50)
     print("📝 UPDATE PRODUCT")
     print("=" * 50)
-    
+
     product_id = self.menu.get_input("Product ID to update")
-    
+
     # Check if product exists
     product_result = self.product_controller.get_product(product_id)
     if not product_result['success']:
         self.menu.print_error(product_result['error'])
         self.menu.pause()
         return
-    
+
     product = product_result['product']
     print(f"\nCurrent product: {product['name']} - {product['price_display']}")
     print("Leave fields empty to keep current values:")
-    
+
     # Get new values
-    name = self.menu.get_input(f"Name [{product['name']}]", required=False)
+    name = self.menu.get_input(f"Name [{product['name']}]",
+                               required=False)
     price_str = input(f"Price [{product['price_display']}]: ").strip()
-    category = self.menu.get_input(f"Category [{product['category']}]", required=False)
+    current_category = product['category']
+    category = self.menu.get_input(f"Category [{current_category}]",
+                                   required=False)
     stock_str = input(f"Stock [{product['stock']}]: ").strip()
-    description = self.menu.get_input(f"Description [{product['description']}]", required=False)
-    
+    current_desc = product['description']
+    description = self.menu.get_input(f"Description [{current_desc}]",
+                                      required=False)
+
     # Build update data
     update_data = {}
     if name:
@@ -113,19 +118,19 @@ def _admin_update_product(self):
             return
     if description:
         update_data['description'] = description
-    
+
     if not update_data:
         self.menu.print_info("No changes made")
         self.menu.pause()
         return
-    
+
     result = self.product_controller.update_product(product_id, **update_data)
-    
+
     if result['success']:
         self.menu.print_success(result['message'])
     else:
         self.menu.print_error(result['error'])
-    
+
     self.menu.pause()
 
 
@@ -134,29 +139,31 @@ def _admin_delete_product(self):
     print("\n" + "=" * 50)
     print("🗑️  DELETE PRODUCT")
     print("=" * 50)
-    
+
     product_id = self.menu.get_input("Product ID to delete")
-    
+
     # Check if product exists
     product_result = self.product_controller.get_product(product_id)
     if not product_result['success']:
         self.menu.print_error(product_result['error'])
         self.menu.pause()
         return
-    
+
     product = product_result['product']
-    print(f"\nProduct to delete: {product['name']} - {product['price_display']}")
-    
+    product_name = product['name']
+    price_display = product['price_display']
+    print(f"\nProduct to delete: {product_name} - {price_display}")
+
     if self.menu.confirm("Are you sure you want to delete this product?"):
         result = self.product_controller.delete_product(product_id)
-        
+
         if result['success']:
             self.menu.print_success(result['message'])
         else:
             self.menu.print_error(result['error'])
     else:
         self.menu.print_info("Delete cancelled")
-    
+
     self.menu.pause()
 
 
@@ -165,19 +172,19 @@ def _admin_low_stock_report(self):
     print("\n" + "=" * 50)
     print("📊 LOW STOCK REPORT")
     print("=" * 50)
-    
+
     threshold = self.menu.get_integer_input("Stock threshold", min_val=0)
-    
+
     result = self.product_controller.get_low_stock_products(threshold)
-    
+
     if result['success']:
         products = result['products']
-        
+
         if products:
             print(f"\n⚠️  Found {result['count']} product(s) with stock <= {threshold}")
             print(f"{'ID':<12} {'Name':<25} {'Stock':<8} {'Category':<15}")
             print("-" * 70)
-            
+
             for product in products:
                 print(f"{product['id']:<12} {product['name']:<25} "
                       f"{product['stock']:<8} {product['category']:<15}")
@@ -185,7 +192,7 @@ def _admin_low_stock_report(self):
             self.menu.print_success(f"All products have stock > {threshold}")
     else:
         self.menu.print_error(result['error'])
-    
+
     self.menu.pause()
 
 
@@ -194,54 +201,54 @@ def _admin_category_discount(self):
     print("\n" + "=" * 50)
     print("🏷️  APPLY CATEGORY DISCOUNT")
     print("=" * 50)
-    
+
     # Get categories
     cat_result = self.product_controller.get_categories()
     if not cat_result['success']:
         self.menu.print_error(cat_result['error'])
         self.menu.pause()
         return
-    
+
     categories = cat_result['categories']
     if not categories:
         self.menu.print_info("No categories available")
         self.menu.pause()
         return
-    
+
     # Select category
     from src.views.menu import SimpleMenu
     category_menu = SimpleMenu("Select Category", categories)
     choice = category_menu.display()
-    
+
     if choice is None:
         return
-    
+
     category = categories[choice]
     discount = self.menu.get_number_input("Discount percentage", min_val=0, max_val=100)
-    
+
     if self.menu.confirm(f"Apply {discount}% discount to all '{category}' products?"):
         result = self.product_controller.apply_category_discount(category, discount)
-        
+
         if result['success']:
             self.menu.print_success(result['message'])
         else:
             self.menu.print_error(result['error'])
     else:
         self.menu.print_info("Discount cancelled")
-    
+
     self.menu.pause()
 
 
 def _admin_user_menu(self):
     """Admin user management menu"""
     from src.views.menu import SimpleMenu
-    
+
     menu = SimpleMenu("User Management", [
         "👥 List All Users",
         "🔄 Change User Role",
         "🗑️  Delete User"
     ])
-    
+
     choice = menu.display()
     if choice is None:
         return
@@ -258,17 +265,17 @@ def _admin_list_users(self):
     print("\n" + "=" * 60)
     print("👥 ALL USERS")
     print("=" * 60)
-    
+
     result = self.user_controller.list_users()
-    
+
     if result['success']:
         users = result['users']
-        
+
         if users:
             print(f"📊 Found {result['count']} user(s)\n")
             print(f"{'ID':<12} {'Username':<20} {'Email':<25} {'Role':<10}")
             print("-" * 75)
-            
+
             for user in users:
                 print(f"{user['id']:<12} {user['username']:<20} "
                       f"{user['email']:<25} {user['role']:<10}")
@@ -276,7 +283,7 @@ def _admin_list_users(self):
             self.menu.print_info("No users found")
     else:
         self.menu.print_error(result['error'])
-    
+
     self.menu.pause()
 
 
@@ -285,25 +292,25 @@ def _admin_change_user_role(self):
     print("\n" + "=" * 50)
     print("🔄 CHANGE USER ROLE")
     print("=" * 50)
-    
+
     user_id = self.menu.get_input("User ID")
-    
+
     from src.views.menu import SimpleMenu
     role_menu = SimpleMenu("Select New Role", ["customer", "admin", "manager"])
     choice = role_menu.display()
-    
+
     if choice is None:
         return
-    
+
     new_role = ["customer", "admin", "manager"][choice]
-    
+
     result = self.user_controller.update_user_role(user_id, new_role)
-    
+
     if result['success']:
         self.menu.print_success(result['message'])
     else:
         self.menu.print_error(result['error'])
-    
+
     self.menu.pause()
 
 
@@ -312,19 +319,19 @@ def _admin_delete_user(self):
     print("\n" + "=" * 50)
     print("🗑️  DELETE USER")
     print("=" * 50)
-    
+
     user_id = self.menu.get_input("User ID to delete")
-    
+
     if self.menu.confirm("Are you sure you want to delete this user?"):
         result = self.user_controller.delete_user(user_id)
-        
+
         if result['success']:
             self.menu.print_success(result['message'])
         else:
             self.menu.print_error(result['error'])
     else:
         self.menu.print_info("Delete cancelled")
-    
+
     self.menu.pause()
 
 
@@ -344,7 +351,7 @@ def _admin_analytics(self):
     print("   • Generate charts with matplotlib")
     print("   • Export reports to CSV/Excel")
     print("=" * 60)
-    
+
     self.menu.pause()
 
 
@@ -364,7 +371,7 @@ def _admin_settings(self):
     print("   • Configuration file management")
     print("   • System health checks")
     print("=" * 60)
-    
+
     self.menu.pause()
 
 
@@ -373,18 +380,18 @@ from src.views.cli_interface import WebStoreInterface
 # Patch the methods into the WebStoreInterface class
 def patch_admin_methods():
     """Add admin methods to WebStoreInterface class"""
-    
+
     WebStoreInterface.admin_product_menu = admin_product_menu
     WebStoreInterface.admin_add_product = admin_add_product
     WebStoreInterface.admin_update_product = admin_update_product
     WebStoreInterface.admin_delete_product = admin_delete_product
     WebStoreInterface.admin_low_stock_report = admin_low_stock_report
     WebStoreInterface.admin_category_discount = admin_category_discount
-    
+
     WebStoreInterface.admin_user_menu = admin_user_menu
     WebStoreInterface.admin_list_users = admin_list_users
     WebStoreInterface.admin_change_user_role = admin_change_user_role
     WebStoreInterface.admin_delete_user = admin_delete_user
-    
+
     WebStoreInterface.admin_analytics = admin_analytics
     WebStoreInterface.admin_settings = admin_settings
