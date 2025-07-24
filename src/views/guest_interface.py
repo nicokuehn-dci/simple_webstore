@@ -23,17 +23,17 @@ class GuestInterface:
 
         choice = menu.display()
 
-        if choice == 1:
+        if choice == 0:  # Register New Account (Index 0 = Option 1)
             self._register_user()
-        elif choice == 2:
+        elif choice == 1:  # Login to Existing Account (Index 1 = Option 2)
             self._login_user()
-        elif choice == 3:
+        elif choice == 2:  # Browse Products (Index 2 = Option 3)
             self._browse_products_guest()
-        elif choice == 4:
+        elif choice == 3:  # Search Products (Index 3 = Option 4)
             self._search_products()
-        elif choice == 5:
+        elif choice == 4:  # About This Application (Index 4 = Option 5)
             self._show_about()
-        elif choice == 0:
+        elif choice is None:  # Exit/Back (User chose 0)
             return False  # Exit
 
         return True  # Continue
@@ -43,16 +43,51 @@ class GuestInterface:
         print("\n👥 USER REGISTRATION")
         print("-" * 30)
 
+        # Get username
         username = input("Username: ").strip()
-        email = input("Email: ").strip()
+        if not username:
+            print("do you wanna kidding me ? Enter correct data :-)")
+            input("Press Enter to continue...")
+            return
 
-        result = self.user_controller.register(username, email)
+        # Get and validate email
+        email = input("Email: ").strip()
+        if not self._validate_email(email):
+            print("do you wanna kidding me ? Enter correct data :-)")
+            input("Press Enter to continue...")
+            return
+
+        # Get password
+        import getpass
+        password = getpass.getpass("Password: ")
+        if not password:
+            print("do you wanna kidding me ? Enter correct data :-)")
+            input("Press Enter to continue...")
+            return
+
+        # Confirm password
+        password_confirm = getpass.getpass("Confirm Password: ")
+        if password != password_confirm:
+            print("do you wanna kidding me ? Enter correct data :-)")
+            print("Passwords do not match!")
+            input("Press Enter to continue...")
+            return
+
+        result = self.user_controller.register(username, email, password)
 
         if result['success']:
             print(f"✅ {result['message']}")
-            print("You can now login with your username.")
+            print("You can now login with your username and password.")
+            input("Press Enter to continue...")
         else:
             print(f"❌ {result['error']}")
+            input("Press Enter to continue...")
+
+    def _validate_email(self, email: str) -> bool:
+        """Validate email format"""
+        import re
+        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return bool(re.match(pattern, email))
 
     def _login_user(self):
         """Handle user login"""
@@ -60,13 +95,33 @@ class GuestInterface:
         print("-" * 20)
 
         username = input("Username: ").strip()
+        
+        if not username:
+            print("do you wanna kidding me ? Enter correct data :-)")
+            input("Press Enter to continue...")
+            return
 
-        result = self.user_controller.login(username)
+        # Get password
+        import getpass
+        password = getpass.getpass("Password: ")
+        
+        if not password:
+            print("do you wanna kidding me ? Enter correct data :-)")
+            input("Press Enter to continue...")
+            return
+
+        result = self.user_controller.login(username, password)
 
         if result['success']:
             print(f"✅ {result['message']}")
+            if result.get('is_admin'):
+                print("🔑 Admin privileges detected!")
+            input("Press Enter to continue...")
         else:
             print(f"❌ {result['error']}")
+            print("💡 Tip: Try 'admin'/'admin123' or 'customer'/'customer123'")
+            print("   for demo accounts")
+            input("Press Enter to continue...")
 
     def _browse_products_guest(self):
         """Browse products without login"""

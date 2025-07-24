@@ -23,8 +23,8 @@ class UserController:
         self.management = UserManagement(user_service, self.permissions)
     
     # Auth operations
-    def login(self, username: str) -> Dict:
-        return self.auth.login(username)
+    def login(self, username: str, password: Optional[str] = None) -> Dict:
+        return self.auth.login(username, password)
     
     def logout(self) -> Dict:
         return self.auth.logout()
@@ -39,7 +39,11 @@ class UserController:
         return self.auth.is_admin()
     
     # Registration operations
-    def register(self, username: str, email: str, role: str = "customer") -> Dict:
+    def register(self, username: str, email: str,
+                 password: Optional[str] = None,
+                 role: str = "customer") -> Dict:
+        # For now, ignore password in registration (store in demo_passwords)
+        _ = password  # Acknowledge the parameter
         return self.registration.register(username, email, role)
     
     # Permission operations

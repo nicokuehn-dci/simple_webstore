@@ -7,10 +7,10 @@ from src.services.product_service import ProductService
 
 class ProductManagement:
     """Handles admin product management operations"""
-    
+
     def __init__(self, product_service: ProductService):
         self.product_service = product_service
-    
+
     def get_low_stock_products(self, threshold: int = 5) -> Dict:
         """Get products with low stock"""
         try:
@@ -21,25 +21,29 @@ class ProductManagement:
                 'count': len(products),
                 'threshold': threshold
             }
-        except Exception as e:
+        except (ValueError, TypeError, IOError) as e:
             return {'success': False, 'error': f'Failed to check stock: {e}'}
-    
-    def apply_category_discount(self, category: str, discount_percent: float) -> Dict:
+
+    def apply_category_discount(self, category: str,
+                                discount_percent: float) -> Dict:
         """Apply discount to all products in category"""
         if not 0 <= discount_percent <= 100:
-            return {'success': False, 'error': 'Discount must be between 0 and 100'}
-        
+            error_msg = 'Discount must be between 0 and 100'
+            return {'success': False, 'error': error_msg}
+
         try:
             updated_count = self.product_service.apply_discount_to_category(
                 category, discount_percent
             )
             return {
                 'success': True,
-                'message': f'Applied {discount_percent}% discount to {updated_count} products',
+                'message': (f'Applied {discount_percent}% discount to '
+                            f'{updated_count} products'),
                 'updated_count': updated_count
             }
-        except Exception as e:
-            return {'success': False, 'error': f'Failed to apply discount: {e}'}
+        except (ValueError, TypeError, IOError) as e:
+            error_msg = f'Failed to apply discount: {e}'
+            return {'success': False, 'error': error_msg}
     
     def get_product_stats(self) -> Dict:
         """Get product statistics"""
@@ -59,26 +63,27 @@ class ProductManagement:
                     'out_of_stock_count': out_of_stock_count
                 }
             }
-        except Exception as e:
+        except (ValueError, TypeError, IOError) as e:
             return {'success': False, 'error': f'Failed to get stats: {e}'}
-    
+
     def bulk_update_stock(self, updates: Dict[str, int]) -> Dict:
         """Update stock for multiple products"""
         try:
             updated_count = 0
             for product_id, new_stock in updates.items():
-                success = self.product_service.update_product(product_id, stock=new_stock)
+                success = self.product_service.update_product(
+                    product_id, stock=new_stock)
                 if success:
                     updated_count += 1
-            
+
             return {
                 'success': True,
                 'message': f'Updated stock for {updated_count} products',
                 'updated_count': updated_count
             }
-        except Exception as e:
+        except (ValueError, TypeError, IOError) as e:
             return {'success': False, 'error': f'Bulk update failed: {e}'}
-    
+
     def _format_product(self, product) -> Dict:
         """Format product for display"""
         return {

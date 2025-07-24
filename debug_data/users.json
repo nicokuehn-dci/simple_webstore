@@ -1,0 +1,10 @@
+[
+  {
+    "id": "USR-400A8695",
+    "username": "testuser",
+    "email": "test@example.com",
+    "role": "customer",
+    "created_at": "2025-07-24T18:08:29.391734",
+    "last_login": "2025-07-24T18:08:29.402341"
+  }
+]

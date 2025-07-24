@@ -22,8 +22,9 @@ class ProductController:
     
     # Operations
     def create_product(self, name: str, price: float, category: str,
-                      stock: int = 0, description: str = "") -> Dict:
-        return self.operations.create_product(name, price, category, stock, description)
+                       stock: int = 0, description: str = "") -> Dict:
+        return self.operations.create_product(
+            name, price, category, stock, description)
     
     def update_product(self, product_id: str, **kwargs) -> Dict:
         return self.operations.update_product(product_id, **kwargs)
@@ -32,7 +33,7 @@ class ProductController:
         return self.operations.delete_product(product_id)
     
     # Search and browsing
-    def list_products(self, category: str = None) -> Dict:
+    def list_products(self, category: str | None = None) -> Dict:
         return self.search.list_products(category)
     
     def get_product(self, product_id: str) -> Dict:
@@ -51,8 +52,10 @@ class ProductController:
     def get_low_stock_products(self, threshold: int = 5) -> Dict:
         return self.management.get_low_stock_products(threshold)
     
-    def apply_category_discount(self, category: str, discount_percent: float) -> Dict:
-        return self.management.apply_category_discount(category, discount_percent)
+    def apply_category_discount(self, category: str,
+                                discount_percent: float) -> Dict:
+        return self.management.apply_category_discount(
+            category, discount_percent)
     
     def get_product_stats(self) -> Dict:
         return self.management.get_product_stats()

@@ -4,19 +4,22 @@ A clean, modular CLI e-commerce application demonstrating MVC architecture with 
 
 ## 🚀 Quick Start
 
-### Windows:
+### Windows
+
 ```bash
 setup.bat
 python webstore.py
 ```
 
-### Linux/Mac:
+### Linux/Mac
+
 ```bash
 chmod +x setup.sh && ./setup.sh
 python webstore.py
 ```
 
-### Storage Options:
+### Storage Options
+
 - `python webstore.py` - JSON storage (default)
 - `python webstore_csv.py` - CSV storage (Excel-compatible)
 
@@ -33,6 +36,7 @@ python webstore.py
 ## 🏗️ Architecture
 
 Clean MVC Pattern:
+
 ```text
 src/
 ├── models/          # Data entities (Product, User, Cart)
@@ -91,6 +95,7 @@ simple_webstore/
 ## 🎓 Educational Value
 
 Perfect for learning:
+
 - **Software Architecture** patterns
 - **Clean Code** principles  
 - **Modular Design** concepts

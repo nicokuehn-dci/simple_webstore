@@ -15,35 +15,34 @@ class SimpleMenu:
     
     def display(self) -> Optional[int]:
         """Display menu and get user choice"""
-        print(f"\n{'=' * 60}")
-        print(f"📋 {self.title}")
-        print('=' * 60)
-        
-        for i, option in enumerate(self.options):
-            print(f"  {i + 1}. {option}")
-        print("  0. Exit/Back")
-        print()
-        
-        try:
-            choice = input("👉 Your choice: ").strip()
-            if choice == '0':
-                return None
+        while True:
+            print(f"\n{'=' * 60}")
+            print(f"📋 {self.title}")
+            print('=' * 60)
             
-            choice_num = int(choice) - 1
-            if 0 <= choice_num < len(self.options):
-                return choice_num
-            else:
-                print("❌ Invalid choice. Please try again.")
-                input("Press Enter to continue...")
-                return self.display()
+            for i, option in enumerate(self.options):
+                print(f"  {i + 1}. {option}")
+            print("  0. Exit/Back")
+            print()
+            
+            try:
+                choice = input("👉 Your choice: ").strip()
+                if choice == '0':
+                    return None
                 
-        except ValueError:
-            print("❌ Please enter a valid number.")
-            input("Press Enter to continue...")
-            return self.display()
-        except KeyboardInterrupt:
-            print("\n👋 Goodbye!")
-            sys.exit(0)
+                choice_num = int(choice) - 1
+                if 0 <= choice_num < len(self.options):
+                    return choice_num
+                else:
+                    print("❌ Invalid choice. Please try again.")
+                    input("Press Enter to continue...")
+                    
+            except ValueError:
+                print("❌ Please enter a valid number.")
+                input("Press Enter to continue...")
+            except KeyboardInterrupt:
+                print("\n👋 Goodbye!")
+                sys.exit(0)
     
     def get_input(self, prompt: str, required: bool = True) -> str:
         """Get user input with validation"""

@@ -10,25 +10,44 @@ class UserAuth:
     
     def __init__(self, user_service: UserService):
         self.user_service = user_service
-        self.current_user = None
+        self.current_user = None  # type: ignore
+        # Demo passwords for testing
+        self.demo_passwords = {
+            'admin': 'admin123',
+            'customer': 'customer123'
+        }
     
-    def login(self, username: str) -> Dict:
-        """Login user by username"""
+    def login(self, username: str, password: Optional[str] = None) -> Dict:
+        """Login user by username and password"""
         if not username.strip():
             return {'success': False, 'error': 'Username is required'}
         
+        # Check if user exists
         user = self.user_service.authenticate_user(username)
         
-        if user:
-            self.current_user = user
-            return {
-                'success': True,
-                'user': self._format_user(user),
-                'message': f'Welcome back, {user.username}!',
-                'is_admin': user.is_admin
-            }
-        else:
-            return {'success': False, 'error': 'User not found'}
+        if not user:
+            return {'success': False, 'error': 'Invalid username or password'}
+        
+        # If password provided, validate it
+        if password is not None:
+            if username in self.demo_passwords:
+                if password != self.demo_passwords[username]:
+                    return {
+                        'success': False,
+                        'error': 'Invalid username or password'
+                    }
+            else:
+                # For new users, any password is accepted for now
+                pass
+        
+        # Login successful
+        self.current_user = user  # type: ignore
+        return {
+            'success': True,
+            'user': self._format_user(user),
+            'message': f'Welcome back, {user.username}!',
+            'is_admin': user.is_admin
+        }
     
     def logout(self) -> Dict:
         """Logout current user"""
@@ -54,7 +73,7 @@ class UserAuth:
     
     def is_admin(self) -> bool:
         """Check if current user is admin"""
-        return self.current_user and self.current_user.is_admin
+        return bool(self.current_user and self.current_user.is_admin)
     
     def _format_user(self, user, detailed: bool = False) -> Dict:
         """Format user for display"""

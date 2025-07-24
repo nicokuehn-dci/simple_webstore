@@ -13,7 +13,6 @@ class WebStoreInterface:
     
     def run(self):
         """Main application loop"""
-        self.print_welcome()
         
         while True:
             try:
