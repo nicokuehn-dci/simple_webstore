@@ -78,10 +78,10 @@ def main():
     repository = JSONRepository("data")
     product_service = ProductService(repository)
     user_service = UserService(repository)
-    cart_service = CartService(product_service)
+    cart_service = CartService(product_service, "data")
     
     product_controller = ProductController(product_service)
-    user_controller = UserController(user_service)
+    user_controller = UserController(user_service, cart_service)
     cart_controller = CartController(cart_service, user_controller)
     
     # Create sample data if needed

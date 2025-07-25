@@ -14,19 +14,23 @@ class CartViewing:
     
     def get_cart(self) -> Dict:
         """Get current user's cart contents"""
-        auth_check = self.user_controller.require_login()
-        if not auth_check['success']:
-            return auth_check
+        if not self.user_controller.is_logged_in():
+            return {'success': False, 'error': 'Please login first'}
         
-        user_id = self.user_controller.current_user.id
-        cart_items = self.cart_service.get_cart_contents(user_id)
+        # Get current user
+        current_user = self.user_controller.get_current_user()
+        if not current_user:
+            return {'success': False, 'error': 'No user logged in'}
+            
+        user_id = current_user['id']
+        cart = self.cart_service.get_cart(user_id)
         
-        if cart_items is not None:
+        if cart is not None:
             return {
                 'success': True,
-                'items': [self._format_cart_item(item) for item in cart_items],
-                'total': self._calculate_total(cart_items),
-                'count': len(cart_items)
+                'items': [self._format_cart_item(item) for item in cart.items],
+                'total': self._calculate_total(cart.items),
+                'count': len(cart.items)
             }
         else:
             return {
@@ -55,9 +59,13 @@ class CartViewing:
     
     def checkout(self) -> Dict:
         """Process checkout for current user"""
-        auth_check = self.user_controller.require_login()
-        if not auth_check['success']:
-            return auth_check
+        if not self.user_controller.is_logged_in():
+            return {'success': False, 'error': 'Please login first'}
+        
+        # Get current user
+        current_user = self.user_controller.get_current_user()
+        if not current_user:
+            return {'success': False, 'error': 'No user logged in'}
         
         # Get cart first to check if empty
         cart_result = self.get_cart()
@@ -70,32 +78,38 @@ class CartViewing:
                 'error': 'Cannot checkout with empty cart'
             }
         
-        user_id = self.user_controller.current_user.id
-        success = self.cart_service.checkout(user_id)
+        user_id = current_user['id']
+        checkout_result = self.cart_service.checkout(user_id)
         
-        if success:
+        if checkout_result and checkout_result.get('success'):
             return {
                 'success': True,
                 'message': 'Checkout completed successfully!',
-                'order_total': cart_result['total']
+                'order_total': cart_result['total'],
+                'order': checkout_result.get('order')
             }
         else:
+            error_msg = 'Checkout failed'
+            if checkout_result and checkout_result.get('error'):
+                error_msg = checkout_result['error']
             return {
                 'success': False,
-                'error': 'Checkout failed'
+                'error': error_msg
             }
     
     def _format_cart_item(self, item) -> Dict:
         """Format cart item for display"""
+        subtotal = round(item.price_per_unit * item.quantity, 2)
         return {
-            'product_id': item.product.id,
-            'name': item.product.name,
-            'price': round(item.product.price, 2),
+            'product_id': item.product_id,
+            'name': item.product_name,
+            'price': round(item.price_per_unit, 2),
             'quantity': item.quantity,
-            'subtotal': round(item.product.price * item.quantity, 2)
+            'subtotal': subtotal,
+            'total': subtotal  # Add total field for compatibility
         }
     
     def _calculate_total(self, cart_items) -> float:
         """Calculate total price of cart items"""
-        total = sum(item.product.price * item.quantity for item in cart_items)
+        total = sum(item.price_per_unit * item.quantity for item in cart_items)
         return round(total, 2)

@@ -1,0 +1,11 @@
+[
+  {
+    "id": "PRD-0625C544",
+    "name": "Test Product",
+    "price": 10.99,
+    "category": "Test",
+    "stock": 5,
+    "description": "",
+    "created_at": "2025-07-25T11:39:41.189463"
+  }
+]

@@ -12,9 +12,10 @@ from .user_permissions import UserPermissions
 class UserController:
     """Main controller that coordinates all user operations"""
     
-    def __init__(self, user_service: UserService):
+    def __init__(self, user_service: UserService, cart_service=None):
         """Initialize controller with all user components"""
         self.user_service = user_service
+        self.cart_service = cart_service
         
         # Initialize components
         self.auth = UserAuth(user_service)
@@ -27,6 +28,12 @@ class UserController:
         return self.auth.login(username, password)
     
     def logout(self) -> Dict:
+        # Save cart before logout if cart_service is available
+        if self.cart_service and self.auth.is_logged_in():
+            current_user = self.auth.get_current_user()
+            if current_user:
+                self.cart_service.save_all_carts()
+        
         return self.auth.logout()
     
     def get_current_user(self) -> Optional[Dict]:

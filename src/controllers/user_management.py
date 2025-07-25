@@ -64,8 +64,12 @@ class UserManagement:
             return {'success': False, 'error': 'User not found'}
         
         # Prevent self-deletion
-        if user.id == self.user_auth.current_user.id:
-            return {'success': False, 'error': 'Cannot delete your own account'}
+        current_user = self.user_auth.get_current_user()
+        if current_user and user.id == current_user['id']:
+            return {
+                'success': False,
+                'error': 'Cannot delete your own account'
+            }
         
         success = self.user_service.delete_user(user_id)
         

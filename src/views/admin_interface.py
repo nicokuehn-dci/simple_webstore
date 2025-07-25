@@ -381,17 +381,17 @@ from src.views.cli_interface import WebStoreInterface
 def patch_admin_methods():
     """Add admin methods to WebStoreInterface class"""
 
-    WebStoreInterface.admin_product_menu = admin_product_menu
-    WebStoreInterface.admin_add_product = admin_add_product
-    WebStoreInterface.admin_update_product = admin_update_product
-    WebStoreInterface.admin_delete_product = admin_delete_product
-    WebStoreInterface.admin_low_stock_report = admin_low_stock_report
-    WebStoreInterface.admin_category_discount = admin_category_discount
+    WebStoreInterface.admin_product_menu = _admin_product_menu
+    WebStoreInterface.admin_add_product = _admin_add_product
+    WebStoreInterface.admin_update_product = _admin_update_product
+    WebStoreInterface.admin_delete_product = _admin_delete_product
+    WebStoreInterface.admin_low_stock_report = _admin_low_stock_report
+    WebStoreInterface.admin_category_discount = _admin_category_discount
 
-    WebStoreInterface.admin_user_menu = admin_user_menu
-    WebStoreInterface.admin_list_users = admin_list_users
-    WebStoreInterface.admin_change_user_role = admin_change_user_role
-    WebStoreInterface.admin_delete_user = admin_delete_user
+    WebStoreInterface.admin_user_menu = _admin_user_menu
+    WebStoreInterface.admin_list_users = _admin_list_users
+    WebStoreInterface.admin_change_user_role = _admin_change_user_role
+    WebStoreInterface.admin_delete_user = _admin_delete_user
 
-    WebStoreInterface.admin_analytics = admin_analytics
-    WebStoreInterface.admin_settings = admin_settings
+    WebStoreInterface.admin_analytics = _admin_analytics
+    WebStoreInterface.admin_settings = _admin_settings
